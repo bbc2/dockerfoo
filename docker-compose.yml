@@ -1,0 +1,47 @@
+secrets:
+  database_password:
+    file: .secrets/database_password
+  database_pgpass:
+    file: .secrets/database_pgpass
+
+volumes:
+  history: {}
+  pgdata: {}
+
+services:
+  database:
+    image: postgres:13
+    shm_size: '1GB'
+    environment:
+      POSTGRES_USER: dockerfoo
+      POSTGRES_PASSWORD_FILE: /run/secrets/database_password
+      POSTGRES_DB: dockerfoo
+    secrets:
+      - database_password
+    command: -c shared_buffers=1GB -c max_wal_size=10GB
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  cli:
+    build:
+      context: .
+      dockerfile: docker/cli/Dockerfile
+    secrets:
+      - database_password
+    volumes:
+      - history:/home/main/history
+      - .:/home/main/app
+    profiles:
+      - other
+
+  db-ops:
+    build: docker/db-ops
+    environment:
+      PGPASSFILE: /run/secrets/database_pgpass
+    secrets:
+      - database_pgpass
+    command: psql --host database --username dockerfoo
+    volumes:
+      - history:/home/main/history
+    profiles:
+      - other

@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "dockerfoo"
+version = "0.1.0"
+description = ""
+authors = ["Bertrand Bonnefoy-Claudet <bertrand@bertrandbc.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+click = "^8.1.3"
+psycopg2 = "^2.9.6"
+python = "^3.11"
+sqlalchemy = "^2.0.12"
+tqdm = "^4.65.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+mypy = "^1.2.0"
+pytest = "^7.3.1"
+ruff = "^0.0.264"
+types-tqdm = "^4.65.0.1"
+
+[tool.poetry.scripts]
+dockerfoo = "dockerfoo.cli.main:cli"
+
+[tool.mypy]
+strict = true
+
+[tool.ruff]
+select = ["E", "F", "I", "W"]
+ignore = ["E501"]
+line-length = 88
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
