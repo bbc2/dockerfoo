@@ -26,6 +26,8 @@ services:
     build:
       context: .
       dockerfile: docker/cli/Dockerfile
+    environment:
+      DOCKERFOO_DATABASE_URL: postgresql://dockerfoo@database
     secrets:
       - database_password
     volumes:

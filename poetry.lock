@@ -76,6 +76,22 @@ files = [
 ]
 
 [[package]]
+name = "furl"
+version = "2.1.3"
+description = "URL manipulation made simple."
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "furl-2.1.3-py2.py3-none-any.whl", hash = "sha256:9ab425062c4217f9802508e45feb4a83e54324273ac4b202f1850363309666c0"},
+    {file = "furl-2.1.3.tar.gz", hash = "sha256:5a6188fe2666c484a12159c18be97a1977a71d632ef5bb867ef15f54af39cc4e"},
+]
+
+[package.dependencies]
+orderedmultidict = ">=1.0.1"
+six = ">=1.8.0"
+
+[[package]]
 name = "greenlet"
 version = "2.0.2"
 description = "Lightweight in-process concurrent programming"
@@ -220,6 +236,21 @@ files = [
 ]
 
 [[package]]
+name = "orderedmultidict"
+version = "1.0.1"
+description = "Ordered Multivalue Dictionary"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "orderedmultidict-1.0.1-py2.py3-none-any.whl", hash = "sha256:43c839a17ee3cdd62234c47deca1a8508a3f2ca1d0678a3bf791c87cf84adbf3"},
+    {file = "orderedmultidict-1.0.1.tar.gz", hash = "sha256:04070bbb5e87291cc9bfa51df413677faf2141c73c61d2a5f7b26bea3cd882ad"},
+]
+
+[package.dependencies]
+six = ">=1.8.0"
+
+[[package]]
 name = "packaging"
 version = "23.1"
 description = "Core utilities for Python packages"
@@ -344,6 +375,18 @@ files = [
     {file = "ruff-0.0.264-py3-none-win_amd64.whl", hash = "sha256:068a82a29d80848a56e3d9d4308e6e0ca8b2ecdaf5ac342a292545a59b7f2c21"},
     {file = "ruff-0.0.264-py3-none-win_arm64.whl", hash = "sha256:3e2c38449548e122f2612843a7c04e22b4fd491656955c57b8cb05df11639ad6"},
     {file = "ruff-0.0.264.tar.gz", hash = "sha256:8fcd4b693ca1374eb7a5796581c90689f884f98f388740d94f0702fd30f8f78f"},
+]
+
+[[package]]
+name = "six"
+version = "1.16.0"
+description = "Python 2 and 3 compatibility utilities"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
+files = [
+    {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
+    {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 
 [[package]]
@@ -472,4 +515,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "2238c217964f70482fcf4391807b594bb47657714cc03a23b2ee3fc445d151dc"
+content-hash = "31a163078ce7ded5009039deceb5deef4c5aa3f2c0899892ce39730a23ea6e8e"
