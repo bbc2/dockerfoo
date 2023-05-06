@@ -7,17 +7,23 @@ from sqlalchemy.orm import Session
 from tqdm import tqdm
 
 from dockerfoo import db
-from dockerfoo.sql.models import Token
+from dockerfoo.sql.models import Token, User
 from dockerfoo.util import timing
 
 
-def insert_tokens(session: Session, count: int) -> None:
+def insert_tokens(session: Session, user_id: int, count: int) -> None:
     if not count:
         return
 
     session.execute(
         insert(Token),
-        [{"value": secrets.token_hex(32)} for _ in range(count)],
+        [
+            {
+                "value": secrets.token_hex(32),
+                "user_id": user_id,
+            }
+            for _ in range(count)
+        ],
     )
     session.commit()
 
@@ -27,11 +33,15 @@ def main(session: Session, bar: "tqdm[NoReturn]", count: int) -> None:
     batch_count = count // batch_size
     remainder_count = count % batch_size
 
+    user = User()
+    session.add(user)
+    session.commit()
+
     for _ in range(batch_count):
-        insert_tokens(session=session, count=batch_size)
+        insert_tokens(session=session, user_id=user.id, count=batch_size)
         bar.update(batch_size)
 
-    insert_tokens(session=session, count=remainder_count)
+    insert_tokens(session=session, user_id=user.id, count=remainder_count)
     bar.update(remainder_count)
 
 
