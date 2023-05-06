@@ -20,6 +20,7 @@ def insert_tokens(session: Session, user_id: int, count: int) -> None:
         [
             {
                 "value": secrets.token_hex(32),
+                "value_json": {"bytes": secrets.token_hex(32)},
                 "user_id": user_id,
             }
             for _ in range(count)
