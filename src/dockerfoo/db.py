@@ -10,11 +10,17 @@ from dockerfoo.util import urls
 
 def get_engine() -> Engine:
     arg_url = os.getenv("DOCKERFOO_DATABASE_URL")
+    arg_password_file = os.getenv("DOCKERFOO_DATABASE_PASSWORD_FILE")
 
     if arg_url is None:
         raise Exception("Missing environment variable: DOCKERFOO_DATABASE_URL")
 
-    password = open("/run/secrets/database_password").read().strip()
+    if arg_password_file is None:
+        raise Exception(
+            "Missing password file variable: DOCKERFOO_DATABASE_PASSWORD_FILE"
+        )
+
+    password = open(arg_password_file).read().strip()
     url = urls.replace_password(url=arg_url, new_password=password)
     return create_engine(url)
 

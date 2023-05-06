@@ -1,4 +1,4 @@
-FROM python:3.11
+FROM python:3.11 AS base
 
 # Update packages
 RUN apt-get update \
@@ -44,10 +44,20 @@ RUN mkdir app
 WORKDIR app
 
 # Install production Python dependencies
-COPY pyproject.toml poetry.lock .
+COPY --chown="$user:$user" pyproject.toml poetry.lock .
 RUN poetry install --only main --no-root
 
 # Add the script to the PATH before executing Bash.
 ENTRYPOINT \
     poetry install --only-root \
     && bash
+
+FROM base AS test
+
+RUN poetry install --no-root
+
+COPY --chown="$user:$user" . .
+RUN poetry install --only-root
+
+ENTRYPOINT []
+CMD ["bash"]

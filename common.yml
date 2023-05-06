@@ -1,0 +1,21 @@
+services:
+  database:
+    image: postgres:13
+    shm_size: '1GB'
+    environment:
+      POSTGRES_USER: dockerfoo
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      POSTGRES_DB: dockerfoo
+    command: -c shared_buffers=1GB -c max_wal_size=10GB
+  cli:
+    build:
+      context: .
+      dockerfile: docker/cli/Dockerfile
+      target: base
+  db-ops:
+    build: docker/db-ops
+  test:
+    build:
+      context: .
+      dockerfile: docker/cli/Dockerfile
+      target: test

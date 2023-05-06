@@ -1,49 +1,75 @@
-secrets:
-  database_password:
-    file: .secrets/database_password
-  database_pgpass:
-    file: .secrets/database_pgpass
-
 volumes:
-  history: {}
-  pgdata: {}
+  dev-history: {}
+  dev-db: {}
+  test-db: {}
+
+secrets:
+  db_password:
+    file: .secrets/db_password
+  db_pgpass:
+    file: .secrets/db_pgpass
 
 services:
-  database:
-    image: postgres:13
-    shm_size: '1GB'
-    environment:
-      POSTGRES_USER: dockerfoo
-      POSTGRES_PASSWORD_FILE: /run/secrets/database_password
-      POSTGRES_DB: dockerfoo
-    secrets:
-      - database_password
-    command: -c shared_buffers=1GB -c max_wal_size=10GB
+  # Development environment
+  dev-database:
+    extends:
+      file: common.yml
+      service: database
     volumes:
-      - pgdata:/var/lib/postgresql/data
-
-  cli:
-    build:
-      context: .
-      dockerfile: docker/cli/Dockerfile
-    environment:
-      DOCKERFOO_DATABASE_URL: postgresql://dockerfoo@database
+      - dev-db:/var/lib/postgresql/data
     secrets:
-      - database_password
+      - db_password
+    profiles:
+      - dev
+  dev-cli:
+    extends:
+      file: common.yml
+      service: cli
+    environment:
+      DOCKERFOO_DATABASE_URL: postgresql://dockerfoo@dev-database
+      DOCKERFOO_DATABASE_PASSWORD_FILE: /run/secrets/db_password
     volumes:
-      - history:/home/main/history
+      - dev-history:/home/main/history
       - .:/home/main/app
-    profiles:
-      - other
-
-  db-ops:
-    build: docker/db-ops
-    environment:
-      PGPASSFILE: /run/secrets/database_pgpass
     secrets:
-      - database_pgpass
-    command: psql --host database --username dockerfoo
-    volumes:
-      - history:/home/main/history
+      - db_password
     profiles:
-      - other
+      - dev-ops
+  dev-db-ops:
+    extends:
+      file: common.yml
+      service: db-ops
+    volumes:
+      - dev-history:/home/main/history
+    secrets:
+      - db_pgpass
+    environment:
+      PGPASSFILE: /run/secrets/db_pgpass
+    command: psql postgresql://dockerfoo@dev-database
+    profiles:
+      - dev-ops
+
+  # Testing environment
+  test-database:
+    extends:
+      file: common.yml
+      service: database
+    volumes:
+      - test-db:/var/lib/postgresql/data
+    secrets:
+      - db_password
+    profiles:
+      - test
+  test-run:
+    extends:
+      file: common.yml
+      service: test
+    depends_on:
+      - test-database
+    secrets:
+      - db_password
+    environment:
+      DOCKERFOO_DATABASE_URL: postgresql://dockerfoo@test-database
+      DOCKERFOO_DATABASE_PASSWORD_FILE: /run/secrets/db_password
+    profiles:
+      - test
