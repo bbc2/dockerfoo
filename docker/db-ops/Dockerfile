@@ -2,7 +2,7 @@ FROM debian:11
 
 # Update packages
 RUN apt update \
-    && apt upgrade \
+    && apt upgrade -y \
     && apt autoremove
 
 # Add user with password-less sudo
