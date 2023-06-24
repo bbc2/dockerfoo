@@ -1,10 +1,18 @@
 project_name=dockerfoo
+env=main
 python_src=src tests integration_tests
+
+full_env=${project_name}-${env}
+secrets_dir=.secrets/${env}
 
 # Docker resources
 docker_services=dev-database dev-cli dev-db-ops test-database test-run
-docker_networks=${project_name}_default
-docker_volumes=${project_name}_dev-history ${project_name}_dev-db ${project_name}_test-db
+docker_networks=${full_env}_default
+docker_volumes=${full_env}_dev-history ${full_env}_dev-db ${full_env}_test-db
+
+# Docker project
+d_env=--project-name "${full_env}"
+export DF_SECRETS_DIR=${secrets_dir}
 
 # Docker profiles
 p_dev=--profile dev
@@ -31,45 +39,47 @@ format:  ## Format source code.
 
 .PHONY: build
 build:  ## Build all Docker Compose services.
-	docker compose ${p_dev} ${p_dev_ops} ${p_test} build
+	docker compose ${d_env} ${p_dev} ${p_dev_ops} ${p_test} build
 
-.secrets:
-	mkdir -p .secrets
-	chmod u+rwx,go-rwx .secrets
-	@echo "$$(head --bytes 15 < /dev/urandom | base64)" > .secrets/db_password
-	@echo "dev-database:*:*:*:$$(cat .secrets/db_password)" > .secrets/db_pgpass
-	chmod u+rw,go-rw .secrets/*  # for protection inside the containers
+${secrets_dir}:
+	mkdir -p "${secrets_dir}"
+	chmod u+rwx,go-rwx "${secrets_dir}"
+	@echo "$$(head --bytes 15 < /dev/urandom | base64)" > "${secrets_dir}/db_password"
+	@echo "dev-database:*:*:*:$$(cat "${secrets_dir}/db_password")" > "${secrets_dir}/db_pgpass"
+	chmod u+rw,go-rw "${secrets_dir}"/*  # for protection inside the containers
 
 .PHONY: serve
-serve: .secrets	 ## Run main Docker Compose services.
-	docker compose ${p_dev} up
+serve: ${secrets_dir}  ## Run main Docker Compose services.
+	docker compose ${d_env} ${p_dev} up
 
 .PHONY: run-cli
-run-cli: .secrets  ## Run CLI in Docker.
-	docker compose ${p_dev} run --rm dev-cli
+run-cli: ${secrets_dir}  ## Run CLI in Docker.
+	docker compose ${d_env} ${p_dev} run --rm dev-cli
 
 .PHONY: run-db-ops
-run-db-ops: .secrets  ## Run database shell in Docker.
-	docker compose ${p_dev} run --rm dev-db-ops
+run-db-ops: ${secrets_dir}  ## Run database shell in Docker.
+	docker compose ${d_env} ${p_dev} run --rm dev-db-ops
 
 .PHONY: db-reset
 db-reset:  ## Reset the database.
-	docker compose ${p_dev} rm --force --stop --volumes
-	docker volume rm --force "${project_name}_dev-db"
+	docker compose ${d_env} ${p_dev} rm --force --stop --volumes
+	docker volume rm --force "${full_env}_dev-db"
 
 .PHONY: clean
 clean:  ## Remove all resources used by this project.
-	docker compose ${p_dev} rm --force --stop --volumes
-	docker compose ${p_dev} kill --remove-orphans
+	docker compose ${d_env} ${p_dev} rm --force --stop --volumes
+	docker compose ${d_env} ${p_dev} kill --remove-orphans
 	docker volume rm --force ${docker_volumes}
 	docker network rm --force ${docker_networks}
-	rm -rf .secrets
+	rm -rf "${secrets_dir}"
 
 .PHONY: run-integration-tests
+run-integration-tests: override full_env="${project_name}-integration-tests"
+run-integration-tests: override d_env=--project-name "${full_env}"
 run-integration-tests:
-	docker compose ${p_test} rm --force --stop --volumes
-	docker volume rm --force "${project_name}_test-db"
-	docker compose ${p_test} build
-	docker compose ${p_test} run --rm test-run pytest integration_tests
-	docker compose ${p_test} rm --force --stop --volumes
-	docker volume rm --force "${project_name}_test-db"
+	docker compose ${d_env} ${p_test} rm --force --stop --volumes
+	docker volume rm --force "${full_env}_test-db"
+	docker compose ${d_env} ${p_test} build
+	docker compose ${d_env} ${p_test} run --rm test-run pytest integration_tests
+	docker compose ${d_env} ${p_test} rm --force --stop --volumes
+	docker volume rm --force "${full_env}_test-db"

@@ -5,9 +5,9 @@ volumes:
 
 secrets:
   db_password:
-    file: .secrets/db_password
+    file: ${DF_SECRETS_DIR}/db_password
   db_pgpass:
-    file: .secrets/db_pgpass
+    file: ${DF_SECRETS_DIR}/db_pgpass
 
 services:
   # Development environment
