@@ -1,5 +1,6 @@
 *.py[cod]
 *.so
+.dmypy.json
 .venv
 /.secrets
 __pycache__

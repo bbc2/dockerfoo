@@ -24,7 +24,7 @@ help:  # from https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 
 .PHONY: check
 check:  ## Check source code.
-	mypy ${python_src}
+	dmypy run -- ${python_src}
 	ruff check ${python_src}
 	pytest tests
 	black --check ${python_src}
