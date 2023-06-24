@@ -1,0 +1,42 @@
+volumes:
+  history: {}
+  db: {}
+
+secrets:
+  db_password:
+    file: ../${DF_SECRETS_DIR}/db_password
+  db_pgpass:
+    file: ../${DF_SECRETS_DIR}/db_pgpass
+
+services:
+  database:
+    extends:
+      file: common.yml
+      service: database
+    volumes:
+      - db:/var/lib/postgresql/data
+    secrets:
+      - db_password
+  cli:
+    extends:
+      file: common.yml
+      service: cli
+    environment:
+      DOCKERFOO_DATABASE_URL: postgresql://dockerfoo@database
+      DOCKERFOO_DATABASE_PASSWORD_FILE: /run/secrets/db_password
+    volumes:
+      - history:/home/main/history
+      - ..:/home/main/app
+    secrets:
+      - db_password
+  db-ops:
+    extends:
+      file: common.yml
+      service: db-ops
+    volumes:
+      - history:/home/main/history
+    secrets:
+      - db_pgpass
+    environment:
+      PGPASSFILE: /run/secrets/db_pgpass
+    command: psql postgresql://dockerfoo@database

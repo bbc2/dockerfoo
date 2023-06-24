@@ -9,6 +9,8 @@ Demonstration of a development environment with Docker Compose.
 
 ## Usage
 
+### Development
+
 Build the container images:
 
 ```sh
@@ -51,6 +53,17 @@ If you want to delete the database and start over:
 ```sh
 make reset-db  # This deletes the Docker volume containing the database files.
 ```
+
+### Production
+
+To use the CLI in production mode, set the following environment variable:
+
+```sh
+DF_MODE=prod make build run-cli
+```
+
+In production mode, the container has only the production code and no mount point. By
+default, `DF_MODE` is `dev`.
 
 ## Architecture
 

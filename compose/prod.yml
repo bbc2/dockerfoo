@@ -1,17 +1,17 @@
 volumes:
-  history: {}
   db: {}
+  history: {}
 
 secrets:
   db_password:
-    file: ${DF_SECRETS_DIR}/db_password
+    file: ../${DF_SECRETS_DIR}/db_password
   db_pgpass:
-    file: ${DF_SECRETS_DIR}/db_pgpass
+    file: ../${DF_SECRETS_DIR}/db_pgpass
 
 services:
   database:
     extends:
-      file: compose/common.yml
+      file: common.yml
       service: database
     volumes:
       - db:/var/lib/postgresql/data
@@ -19,21 +19,18 @@ services:
       - db_password
   cli:
     extends:
-      file: compose/common.yml
+      file: common.yml
       service: cli
+    build:
+      target: prod
     environment:
       DOCKERFOO_DATABASE_URL: postgresql://dockerfoo@database
       DOCKERFOO_DATABASE_PASSWORD_FILE: /run/secrets/db_password
-    volumes:
-      - history:/home/main/history
-      - .:/home/main/app
     secrets:
       - db_password
-    profiles:
-      - dev-ops
   db-ops:
     extends:
-      file: compose/common.yml
+      file: common.yml
       service: db-ops
     volumes:
       - history:/home/main/history
@@ -42,5 +39,3 @@ services:
     environment:
       PGPASSFILE: /run/secrets/db_pgpass
     command: psql postgresql://dockerfoo@database
-    profiles:
-      - dev-ops

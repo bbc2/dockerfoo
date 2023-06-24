@@ -52,7 +52,6 @@ def cli(count: int) -> None:
     """
     Insert a specified number of random tokens into the database.
     """
-
     with timing.with_measurement() as result:
         with (
             db.get_session() as session,

@@ -11,9 +11,13 @@ services:
     build:
       context: ..
       dockerfile: docker/cli/Dockerfile
-      target: base
+      target: dev
+    profiles:
+      - dev-ops
   db-ops:
     build: docker/db-ops
+    profiles:
+      - dev-ops
   test:
     build:
       context: ..

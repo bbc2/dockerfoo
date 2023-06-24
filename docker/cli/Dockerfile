@@ -47,10 +47,20 @@ WORKDIR app
 COPY --chown="$user:$user" pyproject.toml poetry.lock .
 RUN poetry install --only main --no-root
 
+FROM base as dev
+
 # Add the script to the PATH before executing Bash.
 ENTRYPOINT \
     poetry install --only-root \
     && bash
+
+FROM base as prod
+
+COPY --chown="$user:$user" . .
+RUN poetry install --only-root
+
+ENTRYPOINT []
+CMD ["bash"]
 
 FROM base AS test
 
