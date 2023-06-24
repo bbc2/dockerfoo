@@ -1,7 +1,6 @@
 volumes:
-  dev-history: {}
-  dev-db: {}
-  test-db: {}
+  history: {}
+  db: {}
 
 secrets:
   db_password:
@@ -10,66 +9,38 @@ secrets:
     file: ${DF_SECRETS_DIR}/db_pgpass
 
 services:
-  # Development environment
-  dev-database:
+  database:
     extends:
-      file: common.yml
+      file: compose/common.yml
       service: database
     volumes:
-      - dev-db:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data
     secrets:
       - db_password
-    profiles:
-      - dev
-  dev-cli:
+  cli:
     extends:
-      file: common.yml
+      file: compose/common.yml
       service: cli
     environment:
-      DOCKERFOO_DATABASE_URL: postgresql://dockerfoo@dev-database
+      DOCKERFOO_DATABASE_URL: postgresql://dockerfoo@database
       DOCKERFOO_DATABASE_PASSWORD_FILE: /run/secrets/db_password
     volumes:
-      - dev-history:/home/main/history
+      - history:/home/main/history
       - .:/home/main/app
     secrets:
       - db_password
     profiles:
       - dev-ops
-  dev-db-ops:
+  db-ops:
     extends:
-      file: common.yml
+      file: compose/common.yml
       service: db-ops
     volumes:
-      - dev-history:/home/main/history
+      - history:/home/main/history
     secrets:
       - db_pgpass
     environment:
       PGPASSFILE: /run/secrets/db_pgpass
-    command: psql postgresql://dockerfoo@dev-database
+    command: psql postgresql://dockerfoo@database
     profiles:
       - dev-ops
-
-  # Testing environment
-  test-database:
-    extends:
-      file: common.yml
-      service: database
-    volumes:
-      - test-db:/var/lib/postgresql/data
-    secrets:
-      - db_password
-    profiles:
-      - test
-  test-run:
-    extends:
-      file: common.yml
-      service: test
-    depends_on:
-      - test-database
-    secrets:
-      - db_password
-    environment:
-      DOCKERFOO_DATABASE_URL: postgresql://dockerfoo@test-database
-      DOCKERFOO_DATABASE_PASSWORD_FILE: /run/secrets/db_password
-    profiles:
-      - test

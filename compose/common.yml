@@ -9,13 +9,13 @@ services:
     command: -c shared_buffers=1GB -c max_wal_size=10GB
   cli:
     build:
-      context: .
+      context: ..
       dockerfile: docker/cli/Dockerfile
       target: base
   db-ops:
     build: docker/db-ops
   test:
     build:
-      context: .
+      context: ..
       dockerfile: docker/cli/Dockerfile
       target: test

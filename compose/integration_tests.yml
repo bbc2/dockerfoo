@@ -1,0 +1,29 @@
+volumes:
+  db: {}
+
+secrets:
+  db_password:
+    file: ../${DF_SECRETS_DIR}/db_password
+  db_pgpass:
+    file: ../${DF_SECRETS_DIR}/db_pgpass
+
+services:
+  database:
+    extends:
+      file: common.yml
+      service: database
+    volumes:
+      - db:/var/lib/postgresql/data
+    secrets:
+      - db_password
+  run:
+    extends:
+      file: common.yml
+      service: test
+    depends_on:
+      - database
+    secrets:
+      - db_password
+    environment:
+      DOCKERFOO_DATABASE_URL: postgresql://dockerfoo@database
+      DOCKERFOO_DATABASE_PASSWORD_FILE: /run/secrets/db_password
