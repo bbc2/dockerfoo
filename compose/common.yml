@@ -15,7 +15,9 @@ services:
     profiles:
       - dev-ops
   db-ops:
-    build: docker/db-ops
+    build:
+      context: ..
+      dockerfile: docker/db-ops/Dockerfile
     profiles:
       - dev-ops
   test:
