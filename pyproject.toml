@@ -11,14 +11,14 @@ click = "^8.1.3"
 furl = "^2.1.3"
 psycopg2 = "^2.9.6"
 python = "^3.11"
-sqlalchemy = "^2.0.12"
-tqdm = "^4.65.0"
+sqlalchemy = "^2.0.28"
+tqdm = "^4.66.2"
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.3.0"
-mypy = "^1.2.0"
-pytest = "^7.3.1"
-ruff = "^0.1.13"
+black = "^24.3.0"
+mypy = "^1.9.0"
+pytest = "^8.1.1"
+ruff = "^0.3.3"
 types-tqdm = "^4.65.0.1"
 
 [tool.poetry.scripts]
@@ -28,8 +28,8 @@ dockerfoo = "dockerfoo.cli.main:cli"
 strict = true
 
 [tool.ruff]
-select = ["E", "F", "I", "W"]
-ignore = ["E501"]
+lint.select = ["E", "F", "I", "W"]
+lint.ignore = ["E501"]
 line-length = 88
 
 [build-system]
